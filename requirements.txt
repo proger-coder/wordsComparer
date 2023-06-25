@@ -1,0 +1,4 @@
+# Levenshtein~=0.21.1
+Flask~=2.3.2
+# git+https://github.com/suralmasha/RuTranscript
+git+https://github.com/roddar92/russian_soundex
