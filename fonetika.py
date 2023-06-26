@@ -1,76 +1,69 @@
-import json
-
-from flask import Flask, request, jsonify
-
+from flask import Flask, request, make_response, jsonify
 from fonetika.distance import PhoneticsInnerLanguageDistance
 from fonetika.soundex import RussianSoundex
 
 app = Flask(__name__)
 
+def calculate_distance(given_word, answer_word):
+    try:
+        soundex = RussianSoundex(delete_first_letter=True)
+        phon_distance = PhoneticsInnerLanguageDistance(soundex)
+        return phon_distance.distance(given_word, answer_word)
+    except Exception as e:
+        print(f"An error occurred while calculating distance: {e}")
+        return None
+
 
 @app.route('/only_boolean', methods=['POST'])
 def only_boolean():
+    if not request.is_json:
+        return make_response(jsonify({'error': 'No JSON found in request'}), 400)
+
     data = request.get_json()
+    if not data or 'given' not in data or 'answer' not in data:
+        return make_response(jsonify({'error': 'Missing data in request'}), 400)
 
-    given_word = data.get('given')
-    answer_word = data.get('answer')
+    given_word = data['given']
+    answer_word = data['answer']
     limit = data.get('limit', 2)
+    distance = calculate_distance(given_word, answer_word)
 
-    soundex = RussianSoundex(delete_first_letter=True)
-    phon_distance = PhoneticsInnerLanguageDistance(soundex)
-    distance = phon_distance.distance(given_word, answer_word)
-    match = False
-
-    if distance <= limit:
-        match = True
+    if distance is None:
+        return make_response(jsonify({'error': 'An error occurred while calculating distance'}), 500)
 
     response_data = {
-        'match': match
+        'match': distance <= limit
     }
-
-    response = app.response_class(
-        response=json.dumps(response_data, sort_keys=False),
-        status=200,
-        mimetype='application/json'
-    )
-
-    return response
+    return make_response(jsonify(response_data), 200)
 
 
 @app.route('/full_info', methods=['POST'])
 def full_info():
+    if not request.is_json:
+        return make_response(jsonify({'error': 'No JSON found in request'}), 400)
+
     data = request.get_json()
+    if not data or 'given' not in data or 'answer' not in data:
+        return make_response(jsonify({'error': 'Missing data in request'}), 400)
 
-    given_word = data.get('given')
-    answer_word = data.get('answer')
+    given_word = data['given']
+    answer_word = data['answer']
+    distance = calculate_distance(given_word, answer_word)
 
-    soundex = RussianSoundex(delete_first_letter=True)
-    phon_distance = PhoneticsInnerLanguageDistance(soundex)
-    distance = phon_distance.distance(given_word, answer_word)
+    if distance is None:
+        return make_response(jsonify({'error': 'An error occurred while calculating distance'}), 500)
 
     response_data = {
         'given_word': given_word,
         'answer_word': answer_word,
         'distance': distance
     }
+    return make_response(jsonify(response_data), 200)
 
-    response = app.response_class(
-        response=json.dumps(response_data, sort_keys=False),
-        status=200,
-        mimetype='application/json'
-    )
-
-    return response
 
 @app.route('/', methods=['GET'])
 def get_root():
-    response_data = {'wordsCompare status': 'working'}
-    response = app.response_class(
-        response=json.dumps(response_data),
-        status=200,
-        mimetype='application/json'
-    )
-    return response
+    return make_response(jsonify({'wordsCompare status': 'working'}), 200)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=33)
