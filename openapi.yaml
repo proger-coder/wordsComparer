@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  title: wordsCompare - API для сравнения слов
+  title: wordsComparer - API для сравнения слов
   description: >-
     API для сравнения 2-х созвучных слов. Принимает 2 слова, выдаёт либо true/false, либо развёрнутый ответ
   version: 1.0.0

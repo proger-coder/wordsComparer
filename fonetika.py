@@ -66,11 +66,11 @@ def full_info():
 def get_root():
     response_data = {'wordsCompare status': 'working'}
     response = app.response_class(
-        response=jsonify(response_data),
+        response=json.dumps(response_data),
         status=200,
         mimetype='application/json'
     )
     return response
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80)
+    app.run(host='0.0.0.0', port=33)
