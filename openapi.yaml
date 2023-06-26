@@ -1,0 +1,184 @@
+openapi: 3.0.1
+info:
+  title: wordsCompare - API для сравнения слов
+  description: >-
+    API для сравнения 2-х созвучных слов. Принимает 2 слова, выдаёт либо true/false, либо развёрнутый ответ
+  version: 1.0.0
+  contact:
+    name: Ayrat Sungatullin
+    url: https://github.com/proger-coder/wordsComparer
+    email: dimanvaz04@gmail.com
+servers:
+  - url: http://localhost:33/
+    description: основной сервер на локалхосте
+paths:
+  /:
+    get:
+      description: проверка работоспособности
+      summary: получить ответ, что сервис работает
+      tags:
+        - root
+      responses:
+        '200':
+          description: Успешно
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/root'
+  /full_info:
+    post:
+      description: Добавить телефон в список
+      summary: добавить телефон
+      tags:
+        - Телефоны
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/phone'
+      responses:
+        '201':
+          description: Успешно добавлен
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/phones'
+        '400':
+          description: Ошибка при добавлении предмета. Переданы некорректные данные
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: string
+        '404':
+          description: Ошибка в адресе (нет такой категории)
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: string
+  /only_boolean:
+    post:
+      description: Добавить ноутбук в список
+      summary: добавить ноутбук
+      tags:
+        - Ноутбуки
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/laptop'
+      responses:
+        '201':
+          description: Успешно добавлен
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/laptops'
+        '400':
+          description: Ошибка при добавлении предмета. Переданы некорректные данные
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: string
+        '404':
+          description: Ошибка в адресе (нет такой категории)
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: string
+
+components:
+  schemas:
+    root:
+      type: object
+      properties:
+        wordsCompare status:
+          description: Статус
+          type: string
+          example: working
+    phone:
+      type: object
+      required:
+        - brand
+        - model
+        - price
+        - sim
+        - condition
+      properties:
+        brand:
+          description: производитель
+          type: string
+          example: Samsung
+        model:
+          description: модель
+          type: string
+          example: Galaxy S10
+        price:
+          description: цена
+          type: number
+          example: 50 000
+        sim:
+          description: количество сим-карт
+          type: number
+          example: 2
+        condition:
+          description: состояние товара
+          type: string
+          enum:
+            - new
+            - used
+            - broken
+          example: new
+    laptop:
+      type: object
+      required:
+        - brand
+        - model
+        - price
+        - diagonal
+        - condition
+      properties:
+        brand:
+          description: производитель
+          type: string
+          example: Lenovo
+        model:
+          description: модель
+          type: string
+          example: ThinkPad
+        price:
+          description: цена
+          type: number
+          example: 50 000
+        diagonal:
+          description: диагональ экрана
+          type: number
+          example: 15.6
+        condition:
+          description: состояние товара
+          type: string
+          enum:
+            - new
+            - used
+            - broken
+          example: new
+    phones:
+      type: array
+      items:
+        $ref: '#/components/schemas/phone'
+    laptops:
+      type: array
+      items:
+        $ref: '#/components/schemas/laptop'
+    allGoods:
+      type: object
+      properties:
+        phones:
+          type: array
+          items:
+            $ref: '#/components/schemas/phone'
+        laptops:
+          type: array
+          items:
+            $ref: '#/components/schemas/laptop'

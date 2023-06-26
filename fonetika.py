@@ -49,8 +49,8 @@ def full_info():
     distance = phon_distance.distance(given_word, answer_word)
 
     response_data = {
-        'given word': given_word,
-        'answer word': answer_word,
+        'given_word': given_word,
+        'answer_word': answer_word,
         'distance': distance
     }
 
@@ -62,6 +62,15 @@ def full_info():
 
     return response
 
+@app.route('/', methods=['GET'])
+def get_root():
+    response_data = {'wordsCompare status': 'working'}
+    response = app.response_class(
+        response=jsonify(response_data),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
