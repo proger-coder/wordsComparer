@@ -14,171 +14,70 @@ servers:
 paths:
   /:
     get:
-      description: проверка работоспособности
-      summary: получить ответ, что сервис работает
-      tags:
-        - root
+      summary: Получить информацию о статусе сервиса
       responses:
-        '200':
-          description: Успешно
+        200:
+          description: страница с информацией о сервисе
           content:
-            application/json;charset=UTF-8:
-              schema:
-                $ref: '#/components/schemas/root'
-  /full_info:
-    post:
-      description: Добавить телефон в список
-      summary: добавить телефон
-      tags:
-        - Телефоны
-      requestBody:
-        required: true
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/phone'
-      responses:
-        '201':
-          description: Успешно добавлен
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                $ref: '#/components/schemas/phones'
-        '400':
-          description: Ошибка при добавлении предмета. Переданы некорректные данные
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: string
-        '404':
-          description: Ошибка в адресе (нет такой категории)
-          content:
-            application/json;charset=UTF-8:
+            text/html:
               schema:
                 type: string
   /only_boolean:
     post:
-      description: Добавить ноутбук в список
-      summary: добавить ноутбук
-      tags:
-        - Ноутбуки
+      summary: Проверить совпадение двух слов
       requestBody:
         required: true
         content:
-          application/json;charset=UTF-8:
+          application/json:
             schema:
-              $ref: '#/components/schemas/laptop'
+              type: object
+              properties:
+                given:
+                  type: string
+                answer:
+                  type: string
+                limit:
+                  type: integer
+                  default: 2
       responses:
-        '201':
-          description: Успешно добавлен
+        200:
+          description: Результат проверки
           content:
-            application/json;charset=UTF-8:
+            application/json:
               schema:
-                $ref: '#/components/schemas/laptops'
-        '400':
-          description: Ошибка при добавлении предмета. Переданы некорректные данные
+                type: object
+                properties:
+                  match:
+                    type: boolean
+        400:
+          description: Отсутствует JSON или необходимые данные в запросе
+  /full_info:
+    post:
+      summary: Получить полную информацию о сравнении двух слов
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                given:
+                  type: string
+                answer:
+                  type: string
+      responses:
+        200:
+          description: Результат сравнения
           content:
-            application/json;charset=UTF-8:
+            application/json:
               schema:
-                type: string
-        '404':
-          description: Ошибка в адресе (нет такой категории)
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: string
-
-components:
-  schemas:
-    root:
-      type: object
-      properties:
-        wordsCompare status:
-          description: Статус
-          type: string
-          example: working
-    phone:
-      type: object
-      required:
-        - brand
-        - model
-        - price
-        - sim
-        - condition
-      properties:
-        brand:
-          description: производитель
-          type: string
-          example: Samsung
-        model:
-          description: модель
-          type: string
-          example: Galaxy S10
-        price:
-          description: цена
-          type: number
-          example: 50 000
-        sim:
-          description: количество сим-карт
-          type: number
-          example: 2
-        condition:
-          description: состояние товара
-          type: string
-          enum:
-            - new
-            - used
-            - broken
-          example: new
-    laptop:
-      type: object
-      required:
-        - brand
-        - model
-        - price
-        - diagonal
-        - condition
-      properties:
-        brand:
-          description: производитель
-          type: string
-          example: Lenovo
-        model:
-          description: модель
-          type: string
-          example: ThinkPad
-        price:
-          description: цена
-          type: number
-          example: 50 000
-        diagonal:
-          description: диагональ экрана
-          type: number
-          example: 15.6
-        condition:
-          description: состояние товара
-          type: string
-          enum:
-            - new
-            - used
-            - broken
-          example: new
-    phones:
-      type: array
-      items:
-        $ref: '#/components/schemas/phone'
-    laptops:
-      type: array
-      items:
-        $ref: '#/components/schemas/laptop'
-    allGoods:
-      type: object
-      properties:
-        phones:
-          type: array
-          items:
-            $ref: '#/components/schemas/phone'
-        laptops:
-          type: array
-          items:
-            $ref: '#/components/schemas/laptop'
+                type: object
+                properties:
+                  given_word:
+                    type: string
+                  answer_word:
+                    type: string
+                  distance:
+                    type: integer
+        400:
+          description: Отсутствует JSON или необходимые данные в запросе

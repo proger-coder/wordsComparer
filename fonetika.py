@@ -1,4 +1,4 @@
-from flask import Flask, request, make_response, jsonify
+from flask import Flask, request, make_response, jsonify, render_template
 from fonetika.distance import PhoneticsInnerLanguageDistance
 from fonetika.soundex import RussianSoundex
 
@@ -63,7 +63,7 @@ def full_info():
 
 @app.route('/', methods=['GET'])
 def get_root():
-    return make_response(jsonify({'wordsCompare status': 'working'}), 200)
+    return render_template('root.html')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=33)
