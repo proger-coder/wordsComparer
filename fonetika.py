@@ -17,19 +17,29 @@ def calculate_distance(given_word, answer_word):
 @app.route('/only_boolean', methods=['POST'])
 def only_boolean():
     if not request.is_json:
-        return make_response(jsonify({'error': 'No JSON found in request'}), 400)
+        error_message = "No JSON found in request"
+        print(error_message)
+        return make_response(jsonify({'error': error_message}), 400)
 
     data = request.get_json()
-    if not data or 'given' not in data or 'answer' not in data:
-        return make_response(jsonify({'error': 'Missing data in request'}), 400)
+
+    required_fields = ['given', 'answer', 'limit']
+    missing_fields = [field for field in required_fields if field not in data]
+
+    if not data or missing_fields:
+        error_message = 'Missing data in request: ' + ', '.join(missing_fields)
+        print(error_message)
+        return make_response(jsonify({'error': error_message}), 400)
 
     given_word = data['given']
     answer_word = data['answer']
-    limit = data.get('limit', 2)
+    limit = data['limit']
     distance = calculate_distance(given_word, answer_word)
 
     if distance is None:
-        return make_response(jsonify({'error': 'An error occurred while calculating distance'}), 500)
+        error_message = 'An error occurred while calculating distance'
+        print(error_message)
+        return make_response(jsonify({'error': error_message}), 500)
 
     response_data = {
         'match': distance <= limit
@@ -43,15 +53,23 @@ def full_info():
         return make_response(jsonify({'error': 'No JSON found in request'}), 400)
 
     data = request.get_json()
-    if not data or 'given' not in data or 'answer' not in data:
-        return make_response(jsonify({'error': 'Missing data in request'}), 400)
+
+    required_fields = ['given', 'answer']
+    missing_fields = [field for field in required_fields if field not in data]
+
+    if not data or missing_fields:
+        error_message = 'Missing data in request: ' + ', '.join(missing_fields)
+        print(error_message)
+        return make_response(jsonify({'error': error_message}), 400)
 
     given_word = data['given']
     answer_word = data['answer']
     distance = calculate_distance(given_word, answer_word)
 
     if distance is None:
-        return make_response(jsonify({'error': 'An error occurred while calculating distance'}), 500)
+        error_message = 'An error occurred while calculating distance'
+        print(error_message)
+        return make_response(jsonify({'error': error_message}), 500)
 
     response_data = {
         'given_word': given_word,
